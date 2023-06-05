@@ -16,7 +16,6 @@
 
 ;; Below I'm assuming the region is continuous. Otherwise it's gross...
 (defun zanf-dup--start-end ()
-  (interactive)
   (if mark-active
       (car (region-bounds))
     (cons (line-beginning-position) (line-end-position))))
