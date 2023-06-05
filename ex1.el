@@ -14,19 +14,24 @@
 ;; room for interpretation, but I decided to simply insert the region exactly
 ;; after the region selected. 
 
+;; Below I'm assuming the region is continuous. Otherwise it's gross...
+(defun zanf-dup--start-end ()
+  (interactive)
+  (if mark-active
+      (car (region-bounds))
+    (cons (line-beginning-position) (line-end-position))))
+
 (defun zanf-dup-line-or-region ()
   (interactive)
-  (let* ((start (if mark-active
-		    (if (< (point) (mark)) (point) (mark))
-		  (line-beginning-position)))
-	 (end (if mark-active
-		  (if (< (point) (mark)) (mark) (point))
-		(line-end-position)))
+  (let* ((bounds (zanf-dup--start-end))  ;this "unpacking" must be easier
+	 (start (car bounds))
+	 (end (cdr bounds))
 	 (string-to-dup (buffer-substring start end)))
     (unless mark-active
       (setq string-to-dup (concat "\n" string-to-dup)))
-    (goto-char end)
-    (insert string-to-dup)))
+    (save-excursion
+      (goto-char end)
+      (insert string-to-dup))))
 
 ;; Are, in terms of code, "current line" and "region" different or are they
 ;; the same?
