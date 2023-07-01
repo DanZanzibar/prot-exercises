@@ -25,18 +25,18 @@
 (defvar zanv-derived-majors ())
 
 
-(defun zanf-derived-majors--mapatoms-f (symbol)
-  (when (and (apply 'provided-mode-derived-p symbol zanv-derived-majors)
-	     (not (member symbol zanv-derived-majors)))
-    (setq mode-found t)
-    (add-to-list 'zanv-derived-majors symbol)))
+(defun zanf-derived-majors--derived-p (mode)
+  (and (apply 'provided-mode-derived-p mode zanv-derived-majors)
+       (not (member mode zanv-derived-majors))))
 
 
 (defun zanf-derived-majors--get-modes ()
   (let ((mode-found nil))
-    (mapatoms 'zanf-derived-majors--mapatoms-f)
-    (if mode-found
-	(zanf-derived-majors--get-modes))))
+    (mapatoms '(lambda (symbol)
+		 (when (zanf-derived-majors--derived-p symbol)
+		   (setq mode-found t)
+		   (add-to-list 'zanv-derived-majors symbol))))
+    (when mode-found (zanf-derived-majors--get-modes))))
 
 
 (defun zanf-derived-majors (&rest modes)
